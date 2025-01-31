@@ -1,0 +1,352 @@
+<html><head><base href="." /><style>
+.container {
+    max-width: 1000px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+}
+
+.parts-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f0f8ff;
+    border-radius: 10px;
+}
+
+.part-of-speech {
+    padding: 10px 20px;
+    background: #4a90e2;
+    color: white;
+    border-radius: 5px;
+    cursor: move;
+    user-select: none;
+    transition: transform 0.2s;
+    position: relative;
+}
+
+.part-of-speech:hover {
+    transform: scale(1.05);
+}
+
+.part-of-speech.incorrect {
+    background: #e74c3c;
+}
+
+.warning-icon {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 20px;
+    height: 20px;
+    background: #ff4444;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    animation: pulse 1s infinite;
+}
+
+.success-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(76, 175, 80, 0.9);
+    color: white;
+    padding: 20px 40px;
+    border-radius: 10px;
+    font-size: 24px;
+    animation: fadeIn 0.5s;
+    z-index: 1000;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.organizer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding: 20px;
+    background: #f5f5f5;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.drop-zone {
+    height: 150px;
+    border: 2px dashed #ccc;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    transition: background 0.3s, transform 0.5s;
+    padding: 10px;
+    text-align: center;
+}
+
+.drop-zone .function-label {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
+.drop-zone.hover {
+    background: #e3f2fd;
+    border-color: #4a90e2;
+}
+
+.title {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.dragging {
+    opacity: 0.5;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.check-button, .reset-button {
+    padding: 15px 30px;
+    font-size: 1.2em;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.check-button {
+    background: #4CAF50;
+}
+
+.reset-button {
+    background: #ff9800;
+}
+
+.check-button:hover {
+    background: #45a049;
+}
+
+.reset-button:hover {
+    background: #f57c00;
+}
+</style></head><body>
+<div class="container">
+    <h1 class="title">Parts of Speech Challenge</h1>
+    
+    <div class="parts-list" id="parts-list">
+        <div class="part-of-speech" draggable="true">Noun 名詞</div>
+        <div class="part-of-speech" draggable="true">Verb 動詞</div>
+        <div class="part-of-speech" draggable="true">Adjective 形容詞</div>
+        <div class="part-of-speech" draggable="true">Adverb 副詞</div>
+        <div class="part-of-speech" draggable="true">Pronoun 代名詞</div>
+        <div class="part-of-speech" draggable="true">Preposition 介係詞</div>
+        <div class="part-of-speech" draggable="true">Conjunction 連接詞</div>
+        <div class="part-of-speech" draggable="true">Determiner & Article 限定詞與冠詞</div>
+        <div class="part-of-speech" draggable="true">Auxiliary & Modal Verb 助動詞（含情態助動詞）</div>
+    </div>
+
+    <div class="organizer">
+        <div class="drop-zone" data-correct="Adverb">
+            <div class="function-label">Modifies verbs, adjectives, or other adverbs 修飾動詞、形容詞或副詞</div>
+        </div>
+        <div class="drop-zone" data-correct="Adjective">
+            <div class="function-label">Describes nouns or pronouns 修飾名詞，通常放在名詞前面</div>
+        </div>
+        <div class="drop-zone" data-correct="Conjunction">
+            <div class="function-label">Connects words, phrases, or clauses 連接單字、片語、子句</div>
+        </div>
+        <div class="drop-zone" data-correct="Verb">
+            <div class="function-label">Shows action or state of being 展示動作或存在的狀態，可放在名詞前或後</div>
+        </div>
+        <div class="drop-zone" data-correct="Noun">
+            <div class="function-label">Names people, places, things, or ideas 用來稱呼人、事、地，可放在動詞前或後</div>
+        </div>
+        <div class="drop-zone" data-correct="Determiner & Article">
+            <div class="function-label">Specifies or limits nouns 明確修飾名詞或限定名詞，放在名詞前</div>
+        </div>
+        <div class="drop-zone" data-correct="Auxiliary & Modal Verb">
+            <div class="function-label">Helps main verbs express tense or mood 幫助動詞表達時態或情緒</div>
+        </div>
+        <div class="drop-zone" data-correct="Pronoun">
+            <div class="function-label">Replaces nouns in sentences 代替句子中的名詞，但有主受格之分</div>
+        </div>
+        <div class="drop-zone" data-correct="Preposition">
+            <div class="function-label">Shows relationship between words 表示單字之間的關係，後接名詞</div>
+        </div>
+    </div>
+    
+    <div class="button-container">
+        <button class="check-button">Check Answers</button>
+        <button class="reset-button">Reset & Shuffle</button>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const partsOfSpeech = document.querySelectorAll('.part-of-speech');
+    const dropZones = document.querySelectorAll('.drop-zone');
+    const checkButton = document.querySelector('.check-button');
+    const resetButton = document.querySelector('.reset-button');
+    const organizer = document.querySelector('.organizer');
+    let answers_checked = false;
+
+    function shuffleBoxes() {
+        const boxes = Array.from(dropZones);
+        const shuffledBoxes = boxes.sort(() => Math.random() - 0.5);
+        shuffledBoxes.forEach(box => {
+            box.style.transform = 'scale(0.8)';
+            setTimeout(() => {
+                organizer.appendChild(box);
+                box.style.transform = 'scale(1)';
+            }, 200);
+        });
+    }
+
+    function resetGame() {
+        answers_checked = false;
+        dropZones.forEach(zone => {
+            const placedPart = Array.from(zone.children).find(child => 
+                child.classList.contains('part-of-speech'));
+            if (placedPart) {
+                placedPart.remove();
+            }
+        });
+        shuffleBoxes();
+    }
+
+    function checkAnswer(partOfSpeech, dropZone) {
+        return partOfSpeech === dropZone.dataset.correct;
+    }
+
+    function addWarningIcon(element) {
+        const warningIcon = document.createElement('div');
+        warningIcon.className = 'warning-icon';
+        warningIcon.textContent = '!';
+        element.appendChild(warningIcon);
+    }
+
+    function removeWarningIcon(element) {
+        const warningIcon = element.querySelector('.warning-icon');
+        if (warningIcon) {
+            warningIcon.remove();
+        }
+    }
+
+    function showSuccessMessage() {
+        const message = document.createElement('div');
+        message.className = 'success-message';
+        message.textContent = 'Congratulations! All answers are correct!';
+        document.body.appendChild(message);
+        setTimeout(() => message.remove(), 3000);
+    }
+
+    partsOfSpeech.forEach(part => {
+        part.addEventListener('dragstart', (e) => {
+            part.classList.add('dragging');
+            e.dataTransfer.setData('text/plain', part.textContent);
+        });
+
+        part.addEventListener('dragend', () => {
+            part.classList.remove('dragging');
+        });
+    });
+
+    dropZones.forEach(zone => {
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            zone.classList.add('hover');
+        });
+
+        zone.addEventListener('dragleave', () => {
+            zone.classList.remove('hover');
+        });
+
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.classList.remove('hover');
+            
+            const draggedContent = e.dataTransfer.getData('text/plain');
+            
+            const existingPart = Array.from(zone.children).find(child => 
+                child.classList.contains('part-of-speech'));
+            if (existingPart) {
+                existingPart.remove();
+            }
+            
+            const newPart = document.createElement('div');
+            newPart.className = 'part-of-speech';
+            newPart.draggable = true;
+            newPart.textContent = draggedContent;
+            
+            newPart.addEventListener('dragstart', (e) => {
+                newPart.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', newPart.textContent);
+            });
+            
+            newPart.addEventListener('dragend', () => {
+                newPart.classList.remove('dragging');
+            });
+            
+            zone.appendChild(newPart);
+        });
+    });
+
+    checkButton.addEventListener('click', () => {
+        answers_checked = true;
+        let allCorrect = true;
+        
+        dropZones.forEach(zone => {
+            const placedPart = Array.from(zone.children).find(child => 
+                child.classList.contains('part-of-speech'));
+            
+            if (placedPart) {
+                if (!checkAnswer(placedPart.textContent, zone)) {
+                    placedPart.classList.add('incorrect');
+                    addWarningIcon(placedPart);
+                    allCorrect = false;
+                } else {
+                    placedPart.classList.remove('incorrect');
+                    removeWarningIcon(placedPart);
+                }
+            } else {
+                allCorrect = false;
+            }
+        });
+
+        if (allCorrect) {
+            showSuccessMessage();
+        }
+    });
+
+    resetButton.addEventListener('click', resetGame);
+
+    // Initial shuffle
+    shuffleBoxes();
+});
+</script>
+</body></html>
