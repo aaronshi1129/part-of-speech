@@ -240,7 +240,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function checkAnswer(partOfSpeech, dropZone) {
-        return partOfSpeech === dropZone.dataset.correct;
+        const englishPart = partOfSpeech.split(' ')[0];
+        return englishPart === dropZone.dataset.correct;
     }
 
     function addWarningIcon(element) {
