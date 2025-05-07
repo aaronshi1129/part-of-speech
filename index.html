@@ -240,17 +240,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function checkAnswer(partOfSpeech, dropZone) {
-        const englishPart = partOfSpeech.split('名詞')[0].trim();
-        const englishPart = partOfSpeech.split('動詞')[0].trim();
-        const englishPart = partOfSpeech.split('形容詞')[0].trim();
-        const englishPart = partOfSpeech.split('副詞')[0].trim();
-        const englishPart = partOfSpeech.split('代名詞')[0].trim();
-        const englishPart = partOfSpeech.split('介係詞')[0].trim();
-        const englishPart = partOfSpeech.split('連接詞')[0].trim();
-        const englishPart = partOfSpeech.split('限定詞')[0].trim();
-        const englishPart = partOfSpeech.split('助動詞')[0].trim();
-        
-        return englishPart === dropZone.dataset.correct;
+        // 比較英文部分（忽略中文部分）
+        const englishOnly = partOfSpeech.replace(/[\u4e00-\u9fa5]+/g, '').trim();
+        return englishOnly === dropZone.dataset.correct;
     }
 
     function addWarningIcon(element) {
