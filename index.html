@@ -240,9 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function checkAnswer(partOfSpeech, dropZone) {
-        // 比較英文部分（忽略中文部分）
-        const englishOnly = partOfSpeech.replace(/[\u4e00-\u9fa5]+/g, '').trim();
-        return englishOnly === dropZone.dataset.correct;
+        return partOfSpeech === dropZone.dataset.correct;
     }
 
     function addWarningIcon(element) {
