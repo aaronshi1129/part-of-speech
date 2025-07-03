@@ -1,362 +1,326 @@
-<html><head><base href="." /><style>
-.container {
-    max-width: 1000px;
-    margin: 20px auto;
-    font-family: Arial, sans-serif;
-}
 
-.parts-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-bottom: 30px;
-    padding: 20px;
-    background: #f0f8ff;
-    border-radius: 10px;
-}
-
-.part-of-speech {
-    padding: 10px 20px;
-    background: #4a90e2;
-    color: white;
-    border-radius: 5px;
-    cursor: move;
-    user-select: none;
-    transition: transform 0.2s;
-    position: relative;
-}
-
-.part-of-speech:hover {
-    transform: scale(1.05);
-}
-
-.part-of-speech.incorrect {
-    background: #e74c3c;
-}
-
-.warning-icon {
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    width: 20px;
-    height: 20px;
-    background: #ff4444;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    font-size: 14px;
-    animation: pulse 1s infinite;
-}
-
-.success-message {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(76, 175, 80, 0.9);
-    color: white;
-    padding: 20px 40px;
-    border-radius: 10px;
-    font-size: 24px;
-    animation: fadeIn 0.5s;
-    z-index: 1000;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
-    100% { transform: scale(1); }
-}
-
-.organizer {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    padding: 20px;
-    background: #f5f5f5;
-    border-radius: 10px;
-    margin-bottom: 20px;
-}
-
-.drop-zone {
-    height: 150px;
-    border: 2px dashed #ccc;
-    border-radius: 5px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background: white;
-    transition: background 0.3s, transform 0.5s;
-    padding: 10px;
-    text-align: center;
-}
-
-.drop-zone .function-label {
-    font-size: 0.9em;
-    color: #666;
-    margin-bottom: 10px;
-    font-style: italic;
-}
-
-.drop-zone.hover {
-    background: #e3f2fd;
-    border-color: #4a90e2;
-}
-
-.title {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-.dragging {
-    opacity: 0.5;
-}
-
-.button-container {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 20px;
-}
-
-.check-button, .reset-button {
-    padding: 15px 30px;
-    font-size: 1.2em;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
-
-.check-button {
-    background: #4CAF50;
-}
-
-.reset-button {
-    background: #ff9800;
-}
-
-.check-button:hover {
-    background: #45a049;
-}
-
-.reset-button:hover {
-    background: #f57c00;
-}
-</style></head>
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z6V4ZXXZXS"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-Z6V4ZXXZXS');
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parts of Speech Organizer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .draggable {
+            cursor: grab;
+            user-select: none;
+        }
+        .draggable:active {
+            cursor: grabbing;
+        }
+        .droppable {
+            transition: all 0.2s ease;
+        }
+        .droppable.highlight {
+            background-color: #e0f2fe !important;
+            transform: scale(1.02);
+        }
+        .warning {
+            animation: shake 0.5s;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+        .success-animation {
+            animation: success-pulse 0.5s;
+        }
+        @keyframes success-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        .shuffle-animation {
+            animation: shuffle 0.8s ease-in-out;
+        }
+        @keyframes shuffle {
+            0% { transform: translateX(0) translateY(0) rotate(0deg); }
+            25% { transform: translateX(10px) translateY(-10px) rotate(5deg); }
+            50% { transform: translateX(-5px) translateY(5px) rotate(-3deg); }
+            75% { transform: translateX(5px) translateY(-5px) rotate(2deg); }
+            100% { transform: translateX(0) translateY(0) rotate(0deg); }
+        }
+        .main-content {
+            flex: 1;
+        }
+        footer {
+            margin-top: auto;
+        }
+    </style>
+</head>
 <body>
-<div class="container">
-    <h1 class="title">Parts of Speech Challenge</h1>
-    
-    <div class="parts-list" id="parts-list">
-        <div class="part-of-speech" draggable="true">Noun 名詞</div>
-        <div class="part-of-speech" draggable="true">Verb 動詞</div>
-        <div class="part-of-speech" draggable="true">Adjective 形容詞</div>
-        <div class="part-of-speech" draggable="true">Adverb 副詞</div>
-        <div class="part-of-speech" draggable="true">Pronoun 代名詞</div>
-        <div class="part-of-speech" draggable="true">Preposition 介係詞</div>
-        <div class="part-of-speech" draggable="true">Conjunction 連接詞</div>
-        <div class="part-of-speech" draggable="true">Determiner & Article 限定詞與冠詞</div>
-        <div class="part-of-speech" draggable="true">Auxiliary & Modal Verb 助動詞（含情態助動詞）</div>
-    </div>
-
-    <div class="organizer">
-        <div class="drop-zone" data-correct="Adverb 副詞">
-            <div class="function-label">Modifies verbs, adjectives, or other adverbs 修飾動詞、形容詞或副詞</div>
-        </div>
-        <div class="drop-zone" data-correct="Adjective 形容詞">
-            <div class="function-label">Describes nouns or pronouns 修飾名詞，通常放在名詞前面</div>
-        </div>
-        <div class="drop-zone" data-correct="Conjunction 連接詞">
-            <div class="function-label">Connects words, phrases, or clauses 連接單字、片語、子句</div>
-        </div>
-        <div class="drop-zone" data-correct="Verb 動詞">
-            <div class="function-label">Shows action or state of being 展示動作或存在的狀態，可放在名詞前或後</div>
-        </div>
-        <div class="drop-zone" data-correct="Noun 名詞">
-            <div class="function-label">Names people, places, things, or ideas 用來稱呼人、事、地，可放在動詞前或後</div>
-        </div>
-        <div class="drop-zone" data-correct="Determiner & Article 限定詞與冠詞">
-            <div class="function-label">Specifies or limits nouns 明確修飾名詞或限定名詞，放在名詞前</div>
-        </div>
-        <div class="drop-zone" data-correct="Auxiliary & Modal Verb 助動詞（含情態助動詞）">
-            <div class="function-label">Helps main verbs express tense or mood 幫助動詞表達時態或情緒</div>
-        </div>
-        <div class="drop-zone" data-correct="Pronoun 代名詞">
-            <div class="function-label">Replaces nouns in sentences 代替句子中的名詞，但有主受格之分</div>
-        </div>
-        <div class="drop-zone" data-correct="Preposition 介係詞">
-            <div class="function-label">Shows relationship between words 表示單字之間的關係，後接名詞</div>
-        </div>
-    </div>
-    
-    <div class="button-container">
-        <button class="check-button">Check Answers</button>
-        <button class="reset-button">Reset & Shuffle</button>
-    </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-    const partsOfSpeech = document.querySelectorAll('.part-of-speech');
-    const dropZones = document.querySelectorAll('.drop-zone');
-    const checkButton = document.querySelector('.check-button');
-    const resetButton = document.querySelector('.reset-button');
-    const organizer = document.querySelector('.organizer');
-    let answers_checked = false;
-
-    function shuffleBoxes() {
-        const boxes = Array.from(dropZones);
-        const shuffledBoxes = boxes.sort(() => Math.random() - 0.5);
-        shuffledBoxes.forEach(box => {
-            box.style.transform = 'scale(0.8)';
-            setTimeout(() => {
-                organizer.appendChild(box);
-                box.style.transform = 'scale(1)';
-            }, 200);
-        });
-    }
-
-    function resetGame() {
-        answers_checked = false;
-        dropZones.forEach(zone => {
-            const placedPart = Array.from(zone.children).find(child => 
-                child.classList.contains('part-of-speech'));
-            if (placedPart) {
-                placedPart.remove();
-            }
-        });
-        shuffleBoxes();
-    }
-
-    function checkAnswer(partOfSpeech, dropZone) {
-        return partOfSpeech === dropZone.dataset.correct;
-    }
-
-    function addWarningIcon(element) {
-        const warningIcon = document.createElement('div');
-        warningIcon.className = 'warning-icon';
-        warningIcon.textContent = '!';
-        element.appendChild(warningIcon);
-    }
-
-    function removeWarningIcon(element) {
-        const warningIcon = element.querySelector('.warning-icon');
-        if (warningIcon) {
-            warningIcon.remove();
-        }
-    }
-
-    function showSuccessMessage() {
-        const message = document.createElement('div');
-        message.className = 'success-message';
-        message.textContent = 'Congratulations! All answers are correct!';
-        document.body.appendChild(message);
-        setTimeout(() => message.remove(), 3000);
-    }
-
-    partsOfSpeech.forEach(part => {
-        part.addEventListener('dragstart', (e) => {
-            part.classList.add('dragging');
-            e.dataTransfer.setData('text/plain', part.textContent);
-        });
-
-        part.addEventListener('dragend', () => {
-            part.classList.remove('dragging');
-        });
-    });
-
-    dropZones.forEach(zone => {
-        zone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            zone.classList.add('hover');
-        });
-
-        zone.addEventListener('dragleave', () => {
-            zone.classList.remove('hover');
-        });
-
-        zone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            zone.classList.remove('hover');
-            
-            const draggedContent = e.dataTransfer.getData('text/plain');
-            
-            const existingPart = Array.from(zone.children).find(child => 
-                child.classList.contains('part-of-speech'));
-            if (existingPart) {
-                existingPart.remove();
-            }
-            
-            const newPart = document.createElement('div');
-            newPart.className = 'part-of-speech';
-            newPart.draggable = true;
-            newPart.textContent = draggedContent;
-            
-            newPart.addEventListener('dragstart', (e) => {
-                newPart.classList.add('dragging');
-                e.dataTransfer.setData('text/plain', newPart.textContent);
-            });
-            
-            newPart.addEventListener('dragend', () => {
-                newPart.classList.remove('dragging');
-            });
-            
-            zone.appendChild(newPart);
-        });
-    });
-
-    checkButton.addEventListener('click', () => {
-        answers_checked = true;
-        let allCorrect = true;
+    <div class="main-content container mx-auto px-4 py-8 max-w-6xl">
+        <h1 class="text-3xl font-bold text-center text-indigo-700 mb-2">Parts of Speech Organizer</h1>
+        <p class="text-center text-gray-600 mb-8">Drag each part of speech to its matching function box</p>
         
-        dropZones.forEach(zone => {
-            const placedPart = Array.from(zone.children).find(child => 
-                child.classList.contains('part-of-speech'));
+        <div class="flex flex-wrap justify-center gap-4 mb-8" id="parts-container">
+            <div class="part-of-speech draggable bg-red-200 p-4 rounded-lg shadow-md text-center font-bold text-gray-800 w-48 h-16 flex items-center justify-center" draggable="true" data-name="Noun">Noun 名詞</div>
+            <div class="part-of-speech draggable bg-blue-200 p-4 rounded-lg shadow-md text-center font-bold text-gray-800 w-48 h-16 flex items-center justify-center" draggable="true" data-name="Verb">Verb 動詞</div>
+            <div class="part-of-speech draggable bg-green-200 p-4 rounded-lg shadow-md text-center font-bold text-gray-800 w-48 h-16 flex items-center justify-center" draggable="true" data-name="Adjective">Adjective 形容詞</div>
+            <div class="part-of-speech draggable bg-yellow-200 p-4 rounded-lg shadow-md text-center font-bold text-gray-800 w-48 h-16 flex items-center justify-center" draggable="true" data-name="Adverb">Adverb 副詞</div>
+            <div class="part-of-speech draggable bg-purple-200 p-4 rounded-lg shadow-md text-center font-bold text-gray-800 w-48 h-16 flex items-center justify-center" draggable="true" data-name="Pronoun">Pronoun 代名詞</div>
+            <div class="part-of-speech draggable bg-pink-200 p-4 rounded-lg shadow-md text-center font-bold text-gray-800 w-48 h-16 flex items-center justify-center" draggable="true" data-name="Preposition">Preposition 介係詞</div>
+            <div class="part-of-speech draggable bg-orange-200 p-4 rounded-lg shadow-md text-center font-bold text-gray-800 w-48 h-16 flex items-center justify-center" draggable="true" data-name="Conjunction">Conjunction 連接詞</div>
+            <div class="part-of-speech draggable bg-teal-200 p-4 rounded-lg shadow-md text-center font-bold text-gray-800 w-48 h-16 flex items-center justify-center" draggable="true" data-name="Determiner & Article">Determiner & Article 限定詞與冠詞</div>
+            <div class="part-of-speech draggable bg-indigo-200 p-4 rounded-lg shadow-md text-center font-bold text-gray-800 w-48 h-16 flex items-center justify-center" draggable="true" data-name="Auxiliary & Modal Verb">Auxiliary & Modal Verb 助動詞（含情態助動詞）</div>
+        </div>
+        
+        <div id="drop-zones-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="drop-zone droppable bg-white p-4 rounded-lg shadow-md border-2 border-gray-300 min-h-[180px] flex flex-col" data-correct="Adverb">
+                <div class="function-label font-semibold text-gray-700 mb-3 text-center">Modifies verbs, adjectives, or other adverbs 修飾動詞、形容詞或副詞</div>
+                <div class="flex-grow flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-2"></div>
+            </div>
+            <div class="drop-zone droppable bg-white p-4 rounded-lg shadow-md border-2 border-gray-300 min-h-[180px] flex flex-col" data-correct="Adjective">
+                <div class="function-label font-semibold text-gray-700 mb-3 text-center">Describes nouns or pronouns 修飾名詞，通常放在名詞前面</div>
+                <div class="flex-grow flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-2"></div>
+            </div>
+            <div class="drop-zone droppable bg-white p-4 rounded-lg shadow-md border-2 border-gray-300 min-h-[180px] flex flex-col" data-correct="Conjunction">
+                <div class="function-label font-semibold text-gray-700 mb-3 text-center">Connects words, phrases, or clauses 連接單字、片語、子句</div>
+                <div class="flex-grow flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-2"></div>
+            </div>
+            <div class="drop-zone droppable bg-white p-4 rounded-lg shadow-md border-2 border-gray-300 min-h-[180px] flex flex-col" data-correct="Verb">
+                <div class="function-label font-semibold text-gray-700 mb-3 text-center">Shows action or state of being 展示動作或存在的狀態，可放在名詞前或後</div>
+                <div class="flex-grow flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-2"></div>
+            </div>
+            <div class="drop-zone droppable bg-white p-4 rounded-lg shadow-md border-2 border-gray-300 min-h-[180px] flex flex-col" data-correct="Noun">
+                <div class="function-label font-semibold text-gray-700 mb-3 text-center">Names people, places, things, or ideas 用來稱呼人、事、地，可放在動詞前或後</div>
+                <div class="flex-grow flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-2"></div>
+            </div>
+            <div class="drop-zone droppable bg-white p-4 rounded-lg shadow-md border-2 border-gray-300 min-h-[180px] flex flex-col" data-correct="Determiner & Article">
+                <div class="function-label font-semibold text-gray-700 mb-3 text-center">Specifies or limits nouns 明確修飾名詞或限定名詞，放在名詞前</div>
+                <div class="flex-grow flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-2"></div>
+            </div>
+            <div class="drop-zone droppable bg-white p-4 rounded-lg shadow-md border-2 border-gray-300 min-h-[180px] flex flex-col" data-correct="Auxiliary & Modal Verb">
+                <div class="function-label font-semibold text-gray-700 mb-3 text-center">Helps main verbs express tense or mood 幫助動詞表達時態或情緒</div>
+                <div class="flex-grow flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-2"></div>
+            </div>
+            <div class="drop-zone droppable bg-white p-4 rounded-lg shadow-md border-2 border-gray-300 min-h-[180px] flex flex-col" data-correct="Pronoun">
+                <div class="function-label font-semibold text-gray-700 mb-3 text-center">Replaces nouns in sentences 代替句子中的名詞，但有主受格之分</div>
+                <div class="flex-grow flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-2"></div>
+            </div>
+            <div class="drop-zone droppable bg-white p-4 rounded-lg shadow-md border-2 border-gray-300 min-h-[180px] flex flex-col" data-correct="Preposition">
+                <div class="function-label font-semibold text-gray-700 mb-3 text-center">Shows relationship between words 表示單字之間的關係，後接名詞</div>
+                <div class="flex-grow flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-2"></div>
+            </div>
+        </div>
+        
+        <div class="flex justify-center gap-4 mb-8">
+            <button id="check-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all">
+                Check Answers
+            </button>
+            <button id="reset-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all">
+                Reset
+            </button>
+            <button id="shuffle-btn" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all">
+                Reset & Shuffle
+            </button>
+        </div>
+        
+        <div id="feedback" class="mt-6 text-center text-xl font-semibold hidden"></div>
+    </div>
+    
+    <footer class="bg-indigo-800 text-indigo-100 py-6 mt-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0">
+                                
+                <!-- Links -->
+                <div class="flex items-center space-x-4">
+                    <a href="https://www.aaronshi.cc" target="_blank" rel="noopener noreferrer" class="flex items-center hover:text-white transition duration-300">
+                        Go to AaronShi.cc
+                    </a>
+                    <span class="text-indigo-300">|</span>
+                    <a href="https://app.aaronshi.cc" target="_blank" rel="noopener noreferrer" class="flex items-center hover:text-white transition duration-300">
+                        Back to AaronShi.cc App
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Drag and drop functionality
+            let draggedElement = null;
             
-            if (placedPart) {
-                if (!checkAnswer(placedPart.textContent, zone)) {
-                    placedPart.classList.add('incorrect');
-                    addWarningIcon(placedPart);
-                    allCorrect = false;
-                } else {
-                    placedPart.classList.remove('incorrect');
-                    removeWarningIcon(placedPart);
+            document.addEventListener('dragstart', function(e) {
+                if (e.target.classList.contains('draggable')) {
+                    draggedElement = e.target;
+                    e.dataTransfer.setData('text/plain', e.target.dataset.name);
+                    setTimeout(() => {
+                        e.target.classList.add('opacity-50');
+                    }, 0);
                 }
-            } else {
-                allCorrect = false;
+            });
+            
+            document.addEventListener('dragend', function(e) {
+                if (e.target.classList.contains('draggable')) {
+                    e.target.classList.remove('opacity-50');
+                }
+            });
+            
+            document.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                if (e.target.closest('.droppable')) {
+                    const dropZone = e.target.closest('.droppable');
+                    dropZone.classList.add('highlight');
+                }
+            });
+            
+            document.addEventListener('dragleave', function(e) {
+                if (e.target.closest('.droppable')) {
+                    const dropZone = e.target.closest('.droppable');
+                    dropZone.classList.remove('highlight');
+                }
+            });
+            
+            document.addEventListener('drop', function(e) {
+                e.preventDefault();
+                const dropZone = e.target.closest('.droppable');
+                if (dropZone) {
+                    dropZone.classList.remove('highlight');
+                    
+                    // Find the inner drop zone div
+                    const innerDropZone = dropZone.querySelector('div:last-child');
+                    
+                    // Check if there's already an element in this drop zone
+                    if (innerDropZone.querySelector('.draggable')) {
+                        // Return the existing element to the parts container
+                        const existingElement = innerDropZone.querySelector('.draggable');
+                        document.getElementById('parts-container').appendChild(existingElement);
+                    }
+                    
+                    // Move the dragged element to the drop zone
+                    innerDropZone.appendChild(draggedElement);
+                }
+            });
+            
+            // Check answers button
+            document.getElementById('check-btn').addEventListener('click', function() {
+                const dropZones = document.querySelectorAll('.drop-zone');
+                let allCorrect = true;
+                let placedCount = 0;
+                
+                dropZones.forEach(zone => {
+                    const draggedItem = zone.querySelector('.draggable');
+                    if (draggedItem) {
+                        placedCount++;
+                        const isCorrect = draggedItem.dataset.name === zone.dataset.correct;
+                        
+                        if (isCorrect) {
+                            draggedItem.classList.add('success-animation');
+                            draggedItem.classList.remove('warning');
+                            zone.classList.add('border-green-500');
+                            zone.classList.remove('border-red-500');
+                        } else {
+                            draggedItem.classList.add('warning');
+                            zone.classList.add('border-red-500');
+                            allCorrect = false;
+                        }
+                    }
+                });
+                
+                const feedback = document.getElementById('feedback');
+                feedback.classList.remove('hidden');
+                
+                if (placedCount === 0) {
+                    feedback.textContent = "Please place parts of speech in the boxes first!";
+                    feedback.className = "mt-6 text-center text-xl font-semibold text-yellow-600";
+                } else if (placedCount < 9) {
+                    feedback.textContent = `You've placed ${placedCount} out of 9 items. Keep going!`;
+                    feedback.className = "mt-6 text-center text-xl font-semibold text-yellow-600";
+                } else if (allCorrect) {
+                    feedback.textContent = "Great job! All parts of speech are correctly placed!";
+                    feedback.className = "mt-6 text-center text-xl font-semibold text-green-600";
+                } else {
+                    feedback.textContent = "Some parts are in the wrong place. Check the red boxes!";
+                    feedback.className = "mt-6 text-center text-xl font-semibold text-red-600";
+                }
+            });
+            
+            // Reset button
+            document.getElementById('reset-btn').addEventListener('click', function() {
+                resetGame(false);
+            });
+            
+            // Shuffle button
+            document.getElementById('shuffle-btn').addEventListener('click', function() {
+                resetGame(true);
+            });
+            
+            function resetGame(shouldShuffle) {
+                const draggables = document.querySelectorAll('.draggable');
+                const dropZones = document.querySelectorAll('.drop-zone');
+                const partsContainer = document.getElementById('parts-container');
+                
+                // Return all draggable items to the parts container
+                draggables.forEach(item => {
+                    item.classList.remove('warning', 'success-animation');
+                    partsContainer.appendChild(item);
+                });
+                
+                // Reset drop zones
+                dropZones.forEach(zone => {
+                    zone.classList.remove('border-red-500', 'border-green-500');
+                    zone.classList.add('border-gray-300');
+                });
+                
+                // Hide feedback
+                document.getElementById('feedback').classList.add('hidden');
+                
+                if (shouldShuffle) {
+                    // Shuffle the drop zones
+                    const dropZonesContainer = document.getElementById('drop-zones-container');
+                    const dropZonesArray = Array.from(dropZones);
+                    
+                    // Apply shuffle animation to all drop zones
+                    dropZonesArray.forEach(zone => {
+                        zone.classList.add('shuffle-animation');
+                    });
+                    
+                    // Shuffle the array
+                    for (let i = dropZonesArray.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [dropZonesArray[i], dropZonesArray[j]] = [dropZonesArray[j], dropZonesArray[i]];
+                    }
+                    
+                    // Clear the container
+                    dropZonesContainer.innerHTML = '';
+                    
+                    // Append the shuffled drop zones back to the container
+                    dropZonesArray.forEach(zone => {
+                        dropZonesContainer.appendChild(zone);
+                    });
+                    
+                    // Remove animation class after animation completes
+                    setTimeout(() => {
+                        dropZonesArray.forEach(zone => {
+                            zone.classList.remove('shuffle-animation');
+                        });
+                    }, 800);
+                    
+                    // Also shuffle the draggable items
+                    const draggablesArray = Array.from(draggables);
+                    for (let i = draggablesArray.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        partsContainer.appendChild(draggablesArray[j]);
+                    }
+                }
             }
         });
-
-        if (allCorrect) {
-            showSuccessMessage();
-        }
-    });
-
-    resetButton.addEventListener('click', resetGame);
-
-    // Initial shuffle
-    shuffleBoxes();
-});
-</script>
-</body></html>
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9594ccb8a4ab6b68',t:'MTc1MTUyOTEwNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
